@@ -1,17 +1,21 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Button from "../common/Button";
 import Card from "../common/Card";
 import ErrorModal from "../common/ErrorModal";
 import classes from "./AddUser.module.css";
 
 export default function AddUser(props) {
-  const [username, setUsername] = useState("");
-  const [age, setAge] = useState("");
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const nameInputRef = useRef();
+  const ageInputRef = useRef();
+
   const addUserHandler = (event) => {
     event.preventDefault();
+    const username = nameInputRef.current.value;
+    const age = ageInputRef.current.value;
+
     if (username.trim().length === 0 || age.trim().length === 0) {
       setIsError(true);
       setErrorMessage("Please fill all the inputs");
@@ -23,21 +27,9 @@ export default function AddUser(props) {
       return;
     }
     props.onClick({ username, age });
+    nameInputRef.current.value = "";
+    ageInputRef.current.value = "";
     setIsError(false);
-    clear();
-  };
-
-  const onChangeUsernameHandler = (event) => {
-    setUsername(event.target.value);
-  };
-
-  const onChangeAgeHandler = (event) => {
-    setAge(event.target.value);
-  };
-
-  const clear = () => {
-    setUsername("");
-    setAge("");
   };
 
   const closeModal = () => {
@@ -55,19 +47,9 @@ export default function AddUser(props) {
       <Card className={classes.input}>
         <form onSubmit={addUserHandler}>
           <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={onChangeUsernameHandler}
-          />
+          <input type="text" id="username" ref={nameInputRef} />
           <label htmlFor="age">Age (Years)</label>
-          <input
-            type="number"
-            id="age"
-            value={age}
-            onChange={onChangeAgeHandler}
-          />
+          <input type="number" id="age" ref={ageInputRef} />
           <Button type="submit" onClick={addUserHandler}>
             Add User
           </Button>
